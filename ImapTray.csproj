@@ -65,11 +65,20 @@
       <DependentUpon>ConfigurationForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Credential.cs" />
+    <Compile Include="AccountForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AccountForm.Designer.cs">
+      <DependentUpon>AccountForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="MyApplicationContext.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="ConfigurationForm.resx">
       <DependentUpon>ConfigurationForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="AccountForm.resx">
+      <DependentUpon>AccountForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -97,9 +106,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AppIcon.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="AppIcon.ico" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />

@@ -18,8 +18,6 @@ namespace ImapTray
 
         public static Credential[] Load()
         {
-            var serializer = new DataContractJsonSerializer(typeof(Credential[]));
-
             using (var storage = IsolatedStorageFile.GetStore(Scope, null, null))
             {
                 if (!storage.FileExists(FileName))
@@ -38,7 +36,9 @@ namespace ImapTray
                 byte[] data = Decrypt(encryptedData);
                 using (var memoryStream = new MemoryStream(data))
                 {
-                    return (Credential[])serializer.ReadObject(memoryStream);
+                    var serializer = new DataContractJsonSerializer(typeof(Credential[]));
+                    var result = (Credential[]) serializer.ReadObject(memoryStream);
+                    return result;
                 }
             }
         }
