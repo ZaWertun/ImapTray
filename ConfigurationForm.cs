@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Windows.Forms;
 
 namespace ImapTray
@@ -9,8 +10,11 @@ namespace ImapTray
         {
             InitializeComponent();
 
-            ConfigurationManager.onConfigurationChanged += RefreshList;
-            RefreshList(ConfigurationManager.Load());
+            listView1.SizeChanged += ListViewUtils.AutoSizeColumns;
+            ListViewUtils.AutoSizeColumns(listView1, null);
+
+            ConfigurationManager.onConfigurationChanged += ConfigurationChanged;
+            ConfigurationChanged(ConfigurationManager.Load());
         }
 
         private void btnClose_Click(object sender, EventArgs e)
@@ -43,8 +47,10 @@ namespace ImapTray
             ConfigurationManager.Save(cfg);
         }
 
-        private void RefreshList(Configuration cfg)
+        private void ConfigurationChanged(Configuration cfg)
         {
+            txbEmailClientPath.Text = cfg.EmailClientPath;
+
             listView1.BeginUpdate();
             listView1.Items.Clear();
 
@@ -71,29 +77,6 @@ namespace ImapTray
             listView1.Width -= 1;
         }
 
-        private readonly object _resizing = new Object();
-
-        private void listView1_SizeChanged(object sender, EventArgs e)
-        {
-            lock (_resizing)
-            {
-                var listView = sender as ListView;
-                if (listView == null) return;
-
-                float totalColumnWidth = 0;
-                for (int i = 0; i < listView.Columns.Count; i++)
-                {
-                    totalColumnWidth += Convert.ToInt32(listView.Columns[i].Tag);
-                }
-
-                for (int i = 0; i < listView.Columns.Count; i++)
-                {
-                    float colPercentage = (Convert.ToInt32(listView.Columns[i].Tag) / totalColumnWidth);
-                    listView.Columns[i].Width = (int)(colPercentage * listView.ClientRectangle.Width);
-                }
-            }
-        }
-
         private void listView1_MouseDoubleClick(object sender, MouseEventArgs e)
         {
             var listView = (ListView)sender;
@@ -111,6 +94,20 @@ namespace ImapTray
                 }
             );
             form.ShowDialog(this);
+        }
+
+        private void btnSelectEmailClientPath_Click(object sender, EventArgs e)
+        {
+            var dialog = new OpenFileDialog();
+            dialog.Filter = "Executable (*.exe)|*.exe";
+            dialog.FileOk += delegate(object o, CancelEventArgs args)
+            {
+                var path = ((OpenFileDialog) o).FileName;
+                ConfigurationManager.Save(ConfigurationManager.Load().SetEmailClientPath(path));
+            };
+            dialog.Multiselect = false;
+            dialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86);
+            dialog.ShowDialog(this);
         }
     }
 }

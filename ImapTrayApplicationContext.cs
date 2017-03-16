@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Windows.Forms;
 
 namespace ImapTray
@@ -14,7 +15,7 @@ namespace ImapTray
         public ImapTrayApplicationContext()
         {
             _notifyIcon.Icon = Properties.Resources.AppIcon;
-            _notifyIcon.DoubleClick += ShowCfg;
+            _notifyIcon.DoubleClick += OpenEmailClient;
             _notifyIcon.ContextMenu = new ContextMenu(new[]
             {
                 new MenuItem("Configuration", ShowCfg),
@@ -50,6 +51,12 @@ namespace ImapTray
                 _checker.Stop();
                 _checker.Start(cfg);
             };
+        }
+
+        private void OpenEmailClient(object sender, EventArgs e)
+        {
+            Configuration cfg = ConfigurationManager.Load();
+            Process.Start(cfg.EmailClientPath);
         }
 
         private void ShowLog(object sender, EventArgs e)

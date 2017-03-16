@@ -15,6 +15,14 @@ namespace ImapTray
             get { return _accounts; }
         }
 
+        [DataMember(Name = "emailClientPath")]
+        private string _emailClientPath;
+
+        public string EmailClientPath
+        {
+            get { return _emailClientPath; }
+        }
+
         public Configuration(Account[] accounts)
         {
             _accounts = accounts;
@@ -33,9 +41,16 @@ namespace ImapTray
             return this;
         }
 
-        public void RemoveAccount(int at)
+        public Configuration RemoveAccount(int at)
         {
             _accounts = _accounts.Where((_, index) => index != at).ToArray();
+            return this;
+        }
+
+        public Configuration SetEmailClientPath(string path)
+        {
+            _emailClientPath = path;
+            return this;
         }
     }
 }
