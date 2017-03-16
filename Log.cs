@@ -49,7 +49,9 @@ namespace ImapTray
 
         public static void Debug(string message, params object[] args)
         {
+#if DEBUG
             Add(Severity.Debug, message, args);
+#endif
         }
 
         public static void Info(string message, params object[] args)

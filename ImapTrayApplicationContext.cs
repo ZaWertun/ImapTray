@@ -24,7 +24,27 @@ namespace ImapTray
             });
             _notifyIcon.Visible = true;
 
+            _checker.onUnreadChanged += delegate(long unread)
+            {
+                if (unread == 0)
+                {
+                    _notifyIcon.Text = "No unread emails found";
+                }
+                else
+                {
+                    _notifyIcon.Text = String.Format("Unread emails: {0}", unread);
+                }
+            };
+
+            _checker.onNewMessage += delegate(string username, string subject, string from)
+            {
+                _notifyIcon.BalloonTipTitle = username;
+                _notifyIcon.BalloonTipText = String.Format("`{0}` from {1}", subject, from);
+                _notifyIcon.ShowBalloonTip(15 * 1000);
+            };
+
             _checker.Start(ConfigurationManager.Load());
+
             ConfigurationManager.onConfigurationChanged += delegate(Configuration cfg)
             {
                 _checker.Stop();
