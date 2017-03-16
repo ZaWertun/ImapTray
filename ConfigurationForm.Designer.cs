@@ -138,7 +138,7 @@
             // 
             this.tableLayoutPanel4.ColumnCount = 2;
             this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 28F));
+            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel4.Controls.Add(this.txbEmailClientPath, 0, 0);
             this.tableLayoutPanel4.Controls.Add(this.btnSelectEmailClientPath, 1, 0);
             this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -156,16 +156,19 @@
             this.txbEmailClientPath.Location = new System.Drawing.Point(3, 3);
             this.txbEmailClientPath.Margin = new System.Windows.Forms.Padding(3, 3, 0, 3);
             this.txbEmailClientPath.Name = "txbEmailClientPath";
-            this.txbEmailClientPath.Size = new System.Drawing.Size(241, 20);
+            this.txbEmailClientPath.Size = new System.Drawing.Size(239, 20);
             this.txbEmailClientPath.TabIndex = 0;
             // 
             // btnSelectEmailClientPath
             // 
-            this.btnSelectEmailClientPath.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnSelectEmailClientPath.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.btnSelectEmailClientPath.Image = ((System.Drawing.Image)(resources.GetObject("btnSelectEmailClientPath.Image")));
-            this.btnSelectEmailClientPath.Location = new System.Drawing.Point(247, 3);
+            this.btnSelectEmailClientPath.Location = new System.Drawing.Point(245, 2);
+            this.btnSelectEmailClientPath.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnSelectEmailClientPath.Name = "btnSelectEmailClientPath";
-            this.btnSelectEmailClientPath.Size = new System.Drawing.Size(22, 20);
+            this.btnSelectEmailClientPath.Size = new System.Drawing.Size(24, 22);
             this.btnSelectEmailClientPath.TabIndex = 1;
             this.btnSelectEmailClientPath.UseVisualStyleBackColor = true;
             this.btnSelectEmailClientPath.Click += new System.EventHandler(this.btnSelectEmailClientPath_Click);

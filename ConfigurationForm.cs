@@ -99,6 +99,7 @@ namespace ImapTray
         private void btnSelectEmailClientPath_Click(object sender, EventArgs e)
         {
             var dialog = new OpenFileDialog();
+            dialog.Title = "Select email client executable";
             dialog.Filter = "Executable (*.exe)|*.exe";
             dialog.FileOk += delegate(object o, CancelEventArgs args)
             {
@@ -107,6 +108,7 @@ namespace ImapTray
             };
             dialog.Multiselect = false;
             dialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86);
+            dialog.CheckFileExists = true;
             dialog.ShowDialog(this);
         }
     }

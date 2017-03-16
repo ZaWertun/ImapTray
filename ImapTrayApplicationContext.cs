@@ -29,7 +29,7 @@ namespace ImapTray
             {
                 if (unread == 0)
                 {
-                    _notifyIcon.Text = "No unread emails found";
+                    _notifyIcon.Text = "No new emails";
                 }
                 else
                 {
@@ -55,8 +55,20 @@ namespace ImapTray
 
         private void OpenEmailClient(object sender, EventArgs e)
         {
-            Configuration cfg = ConfigurationManager.Load();
-            Process.Start(cfg.EmailClientPath);
+            var clientPath = ConfigurationManager.Load().EmailClientPath;
+            if (String.IsNullOrEmpty(clientPath))
+            {
+                return;
+            }
+
+            try
+            {
+                Process.Start(clientPath);
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Error when starting process: {0}", ex.Message);
+            }
         }
 
         private void ShowLog(object sender, EventArgs e)
