@@ -70,6 +70,7 @@
       <DependentUpon>AccountForm.cs</DependentUpon>
     </Compile>
     <Compile Include="ImapTrayApplicationContext.cs" />
+    <Compile Include="ListViewUtils.cs" />
     <Compile Include="Log.cs" />
     <Compile Include="LogForm.cs">
       <SubType>Form</SubType>
@@ -119,6 +120,18 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\bug.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\exclamation-red.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\information.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\exclamation.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

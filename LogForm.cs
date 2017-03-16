@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Drawing;
-using System.Resources;
 using System.Windows.Forms;
 
 namespace ImapTray
@@ -13,8 +12,16 @@ namespace ImapTray
         {
             InitializeComponent();
 
+            listView1.SizeChanged += ListViewUtils.AutoSizeColumns;
+            ListViewUtils.AutoSizeColumns(listView1, null);
+
             _severityIcons.ImageSize = new Size(16, 16);
-            _severityIcons.Images.Add(Properties.Resources.AppIcon);
+            _severityIcons.ColorDepth = ColorDepth.Depth32Bit;
+
+            _severityIcons.Images.Add(Properties.Resources.Debug);
+            _severityIcons.Images.Add(Properties.Resources.Info);
+            _severityIcons.Images.Add(Properties.Resources.Warn);
+            _severityIcons.Images.Add(Properties.Resources.Error);
 
             listView1.SmallImageList = _severityIcons;
         }
@@ -39,7 +46,7 @@ namespace ImapTray
             {
                 var item = new ListViewItem
                 {
-                    ImageIndex = 0,
+                    ImageIndex = (int) m.severity,
                     Text = ""
                 };
                 item.SubItems.Add(m.when.ToString());

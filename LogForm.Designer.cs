@@ -32,9 +32,9 @@
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.btnClose = new System.Windows.Forms.Button();
             this.listView1 = new System.Windows.Forms.ListView();
+            this.colIcon = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.colTime = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.colMessage = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.colIcon = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.tableLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -50,13 +50,13 @@
             this.tableLayoutPanel1.RowCount = 2;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 26F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(364, 312);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(492, 323);
             this.tableLayoutPanel1.TabIndex = 0;
             // 
             // btnClose
             // 
             this.btnClose.Dock = System.Windows.Forms.DockStyle.Right;
-            this.btnClose.Location = new System.Drawing.Point(289, 286);
+            this.btnClose.Location = new System.Drawing.Point(417, 297);
             this.btnClose.Margin = new System.Windows.Forms.Padding(0);
             this.btnClose.Name = "btnClose";
             this.btnClose.Size = new System.Drawing.Size(75, 26);
@@ -73,33 +73,37 @@
             this.colMessage});
             this.listView1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.listView1.FullRowSelect = true;
-            this.listView1.Location = new System.Drawing.Point(3, 3);
+            this.listView1.Location = new System.Drawing.Point(0, 0);
+            this.listView1.Margin = new System.Windows.Forms.Padding(0);
             this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(358, 280);
+            this.listView1.Size = new System.Drawing.Size(492, 297);
             this.listView1.TabIndex = 1;
             this.listView1.UseCompatibleStateImageBehavior = false;
             this.listView1.View = System.Windows.Forms.View.Details;
             // 
+            // colIcon
+            // 
+            this.colIcon.Tag = "0";
+            this.colIcon.Text = "";
+            this.colIcon.Width = 24;
+            // 
             // colTime
             // 
+            this.colTime.Tag = "0";
             this.colTime.Text = "Time";
-            this.colTime.Width = 75;
+            this.colTime.Width = 120;
             // 
             // colMessage
             // 
+            this.colMessage.Tag = "1";
             this.colMessage.Text = "Message";
-            this.colMessage.Width = 240;
-            // 
-            // colIcon
-            // 
-            this.colIcon.Text = "";
-            this.colIcon.Width = 24;
+            this.colMessage.Width = 300;
             // 
             // LogForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(364, 312);
+            this.ClientSize = new System.Drawing.Size(492, 323);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;

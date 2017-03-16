@@ -37,9 +37,13 @@ namespace ImapTray
                     }
                     clients.Add(client);
                 }
+                catch (InvalidCredentialsException)
+                {
+                    Log.Warn("Account `{0}`: invalid credentials", acc.username);
+                }
                 catch (Exception ex)
                 {
-                    Log.Error(ex.Message);
+                    Log.Error("Account `{0}`: {1}", acc.username, ex.Message);
                 }
             });
 
