@@ -6,8 +6,10 @@ namespace ImapTray
     class ImapTrayApplicationContext : ApplicationContext
     {
         private readonly NotifyIcon _notifyIcon = new NotifyIcon();
-        private readonly ConfigurationForm _configWindow = new ConfigurationForm();
         private readonly AccountChecker _checker = new AccountChecker();
+
+        private LogForm _logWindow = null;
+        private ConfigurationForm _configWindow = null;
 
         public ImapTrayApplicationContext()
         {
@@ -32,11 +34,28 @@ namespace ImapTray
 
         private void ShowLog(object sender, EventArgs e)
         {
-            throw new NotImplementedException();
+            if (_logWindow == null)
+            {
+                _logWindow = new LogForm();
+            }
+
+            if (_logWindow.Visible)
+            {
+                _logWindow.Activate();
+            }
+            else
+            {
+                _logWindow.ShowDialog();
+            }
         }
 
         private void ShowCfg(object sender, EventArgs e)
         {
+            if (_configWindow == null)
+            {
+                _configWindow = new ConfigurationForm();
+            }
+
             if (_configWindow.Visible)
             {
                 _configWindow.Activate();
@@ -50,6 +69,7 @@ namespace ImapTray
         private void Exit(object sender, EventArgs e)
         {
             _notifyIcon.Visible = false;
+            _checker.Stop();
             Application.Exit();
         }
     }

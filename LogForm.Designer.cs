@@ -32,8 +32,9 @@
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.btnClose = new System.Windows.Forms.Button();
             this.listView1 = new System.Windows.Forms.ListView();
-            this.colIcon = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.colTime = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.colMessage = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.colIcon = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.tableLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -62,13 +63,16 @@
             this.btnClose.TabIndex = 0;
             this.btnClose.Text = "Close";
             this.btnClose.UseVisualStyleBackColor = true;
+            this.btnClose.Click += new System.EventHandler(this.btnClose_Click);
             // 
             // listView1
             // 
             this.listView1.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.colIcon,
+            this.colTime,
             this.colMessage});
             this.listView1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listView1.FullRowSelect = true;
             this.listView1.Location = new System.Drawing.Point(3, 3);
             this.listView1.Name = "listView1";
             this.listView1.Size = new System.Drawing.Size(358, 280);
@@ -76,15 +80,20 @@
             this.listView1.UseCompatibleStateImageBehavior = false;
             this.listView1.View = System.Windows.Forms.View.Details;
             // 
-            // colIcon
+            // colTime
             // 
-            this.colIcon.Text = "";
-            this.colIcon.Width = 32;
+            this.colTime.Text = "Time";
+            this.colTime.Width = 75;
             // 
             // colMessage
             // 
             this.colMessage.Text = "Message";
-            this.colMessage.Width = 200;
+            this.colMessage.Width = 240;
+            // 
+            // colIcon
+            // 
+            this.colIcon.Text = "";
+            this.colIcon.Width = 24;
             // 
             // LogForm
             // 
@@ -97,6 +106,7 @@
             this.MinimizeBox = false;
             this.Name = "LogForm";
             this.Text = "Log";
+            this.Shown += new System.EventHandler(this.LogForm_Shown);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.ResumeLayout(false);
 
@@ -107,7 +117,8 @@
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.Button btnClose;
         private System.Windows.Forms.ListView listView1;
-        private System.Windows.Forms.ColumnHeader colIcon;
         private System.Windows.Forms.ColumnHeader colMessage;
+        private System.Windows.Forms.ColumnHeader colTime;
+        private System.Windows.Forms.ColumnHeader colIcon;
     }
 }

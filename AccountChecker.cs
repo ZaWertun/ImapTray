@@ -28,12 +28,19 @@ namespace ImapTray
             List<ImapClient> clients = new List<ImapClient>(configuration.Accounts.Length);
             Array.ForEach(configuration.Accounts, acc =>
             {
-                var client = new ImapClient(acc.server, acc.port, acc.username, acc.password, AuthMethod.Login, acc.ssl);
-                if (client.Supports("IDLE"))
+                try
                 {
-                    client.NewMessage += ClientOnNewMessage;
+                    var client = new ImapClient(acc.server, acc.port, acc.username, acc.password, AuthMethod.Login, acc.ssl);
+                    if (client.Supports("IDLE"))
+                    {
+                        client.NewMessage += ClientOnNewMessage;
+                    }
+                    clients.Add(client);
                 }
-                clients.Add(client);
+                catch (Exception ex)
+                {
+                    Log.Error(ex.Message);
+                }
             });
 
             while (true)
@@ -54,14 +61,14 @@ namespace ImapTray
 
         private void ClientOnNewMessage(object o, IdleMessageEventArgs e)
         {
-            string sender;
+            string from;
             string subject;
             using (var message = e.Client.GetMessage(e.MessageUID, FetchOptions.HeadersOnly))
             {
-                sender = message.Sender.ToString();
+                from = message.From.Address;
                 subject = message.Subject;
             }
-            if (sender.Length > 0 && subject.Length > 0) {}
+            if (from.Length > 0 && subject.Length > 0) { }
         }
 
         public void Dispose()
