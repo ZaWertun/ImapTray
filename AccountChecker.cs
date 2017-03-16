@@ -110,6 +110,8 @@ namespace ImapTray
             {
                 from = message.From.Address;
                 subject = message.Subject;
+                // keep email unread:
+                client.RemoveMessageFlags(e.MessageUID, null, MessageFlag.Seen);
             }
             onNewMessage(account.username, subject, from);
 
