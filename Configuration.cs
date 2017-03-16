@@ -1,75 +1,41 @@
-﻿using System.IO;
-using System.Text;
-using System.IO.IsolatedStorage;
-using System.Runtime.Serialization.Json;
-using System.Security.Cryptography;
+﻿using System;
+using System.Linq;
+using System.Runtime.Serialization;
 
 namespace ImapTray
 {
-    static class Configuration
+    [DataContract]
+    class Configuration
     {
-        private const string FileName = "Credentials.dat";
-        private const IsolatedStorageScope Scope = IsolatedStorageScope.User | IsolatedStorageScope.Assembly;
+        [DataMember(Name = "accounts")]
+        private Account[] _accounts;
 
-        private static byte[] Decrypt(byte[] encryptedData)
+        public Account[] Accounts
         {
-            return ProtectedData.Unprotect(encryptedData, null, DataProtectionScope.CurrentUser);
+            get { return _accounts; }
         }
 
-        public static Credential[] Load()
+        public Configuration(Account[] accounts)
         {
-            using (var storage = IsolatedStorageFile.GetStore(Scope, null, null))
-            {
-                if (!storage.FileExists(FileName))
-                {
-                    return new Credential[] {};
-                }
-
-                byte[] encryptedData;
-                using (var stream = new IsolatedStorageFileStream(FileName, FileMode.Open, FileAccess.Read, storage))
-                using (var memoryStream = new MemoryStream())
-                {
-                    stream.CopyTo(memoryStream);
-                    encryptedData = memoryStream.ToArray();                   
-                }
-
-                byte[] data = Decrypt(encryptedData);
-                using (var memoryStream = new MemoryStream(data))
-                {
-                    var serializer = new DataContractJsonSerializer(typeof(Credential[]));
-                    var result = (Credential[]) serializer.ReadObject(memoryStream);
-                    return result;
-                }
-            }
+            _accounts = accounts;
         }
 
-        private static byte[] Encrypt(string data)
+        public Configuration AddAccount(Account account)
         {
-            return ProtectedData.Protect(Encoding.Unicode.GetBytes(data), null, DataProtectionScope.CurrentUser);
+            Array.Resize(ref _accounts, _accounts.Length + 1);
+            _accounts[_accounts.Length - 1] = account;
+            return this;
         }
 
-        public static void Save(Credential[] credentials)
+        public Configuration SetAccount(int at, Account account)
         {
-            var serializer = new DataContractJsonSerializer(typeof(Credential[]));
+            _accounts[at] = account;
+            return this;
+        }
 
-            using (var memoryStream = new MemoryStream())
-            {
-                serializer.WriteObject(memoryStream, credentials);
-                memoryStream.Seek(0, SeekOrigin.Begin);
-
-                using (var reader = new StreamReader(memoryStream))
-                {                  
-                    string json = reader.ReadToEnd();
-                    byte[] data = Encrypt(json);
-
-                    using (var storage = IsolatedStorageFile.GetStore(Scope, null, null))
-                    using (var stream = new IsolatedStorageFileStream(FileName, FileMode.OpenOrCreate, FileAccess.Write, storage))
-                    {
-                        stream.Write(data, 0, data.Length);
-                        stream.Flush(true);
-                    }
-                }
-            }
+        public void RemoveAccount(int at)
+        {
+            _accounts = _accounts.Where((_, index) => index != at).ToArray();
         }
     }
 }

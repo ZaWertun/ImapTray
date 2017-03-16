@@ -2,13 +2,26 @@
 
 namespace ImapTray
 {
-    public partial class AccountForm : Form
+    public sealed partial class AccountForm : Form
     {
         private event OnActionHandler OnAction;
 
-        public AccountForm(OnActionHandler onAction)
+        public AccountForm(string title, string buttonText, Account account, OnActionHandler onAction)
         {
             InitializeComponent();
+
+            Text = title;
+            btnAction.Text = buttonText;
+
+            if (account != null)
+            {
+                txbLogin.Text = account.username;
+                txbPassword.Text = account.password;
+                txbServer.Text = account.server;
+                numPort.Value = account.port;
+                chbSsl.Checked = account.ssl;
+            }
+
             OnAction += onAction;
         }
 
@@ -19,14 +32,14 @@ namespace ImapTray
                 return;
             }
 
-            string login = txbLogin.Text;
+            string username = txbLogin.Text;
             string password = txbPassword.Text;
             string server = txbServer.Text;
-            uint port = decimal.ToUInt16(numPort.Value);
+            ushort port = decimal.ToUInt16(numPort.Value);
             bool ssl = chbSsl.Checked;
-            OnAction(login, password, server, port, ssl);
+            OnAction(this, new Account(username, password, server, port, ssl));
         }
     }
 
-    public delegate void OnActionHandler(string login, string password, string server, uint port, bool ssl);
+    public delegate void OnActionHandler(AccountForm form, Account account);
 }

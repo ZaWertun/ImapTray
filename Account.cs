@@ -4,10 +4,10 @@ using System.Runtime.Serialization;
 namespace ImapTray
 {
     [DataContract]
-    class Credential
+    public class Account
     {
         [DataMember]
-        public readonly string login;
+        public readonly string username;
 
         [DataMember]
         public readonly string password;
@@ -21,9 +21,9 @@ namespace ImapTray
         [DataMember]
         public readonly bool ssl;
 
-        public Credential(string login, string password, string server, ushort port, bool ssl)
+        public Account(string username, string password, string server, ushort port, bool ssl)
         {
-            this.login = login;
+            this.username = username;
             this.password = password;
             this.server = server;
             this.port = port;

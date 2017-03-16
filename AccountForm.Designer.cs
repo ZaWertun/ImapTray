@@ -1,6 +1,6 @@
 ﻿namespace ImapTray
 {
-    partial class AccountForm
+    sealed partial class AccountForm
     {
         /// <summary>
         /// Required designer variable.

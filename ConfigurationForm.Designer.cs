@@ -116,6 +116,7 @@
             this.listView1.UseCompatibleStateImageBehavior = false;
             this.listView1.View = System.Windows.Forms.View.Details;
             this.listView1.SizeChanged += new System.EventHandler(this.listView1_SizeChanged);
+            this.listView1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.listView1_MouseDoubleClick);
             // 
             // colLogin
             // 
@@ -159,6 +160,7 @@
             this.btnRemove.TabIndex = 2;
             this.btnRemove.Text = "Delete";
             this.btnRemove.UseVisualStyleBackColor = true;
+            this.btnRemove.Click += new System.EventHandler(this.btnRemove_Click);
             // 
             // btnEdit
             // 
