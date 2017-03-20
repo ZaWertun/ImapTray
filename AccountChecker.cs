@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading;
 using S22.Imap;
 
@@ -7,16 +8,29 @@ namespace ImapTray
 {
     class AccountChecker : IDisposable
     {
-        private long _unread;
+        private class ClientWithAccount
+        {
+            public readonly ImapClient Client;
+            public readonly Account Account;
+            public int Unread = 0;
+
+            public ClientWithAccount(ImapClient client, Account account)
+            {
+                Client = client;
+                Account = account;
+            }
+        }
+
         private Thread _workerThread = null;
+        private static readonly AutoResetEvent CheckNowEvent = new AutoResetEvent(false);
         private readonly AutoResetEvent _stopEvent = new AutoResetEvent(false);
-        private readonly Dictionary<ImapClient, Account> _clients = new Dictionary<ImapClient, Account>();
+        private readonly List<ClientWithAccount> _clients = new List<ClientWithAccount>();
 
         public event OnNewMessage onNewMessage;
         public delegate void OnNewMessage(string username, string subject, string from);
 
         public event OnUnreadChanged onUnreadChanged;
-        public delegate void OnUnreadChanged(long unread);
+        public delegate void OnUnreadChanged(Account account, int unread);
 
         public void Start(Configuration configuration)
         {
@@ -24,8 +38,6 @@ namespace ImapTray
             {
                 return;
             }
-
-            _unread = 0;
 
             _workerThread = new Thread(Work);
             _workerThread.Start(configuration);
@@ -37,6 +49,11 @@ namespace ImapTray
             _workerThread.Join();
             _workerThread = null;
             _clients.Clear();
+        }
+
+        public static void CheckNow()
+        {
+            CheckNowEvent.Set();
         }
 
         private void Work(object data)
@@ -52,7 +69,7 @@ namespace ImapTray
                         client.NewMessage += ClientOnNewMessage;
                         client.IdleError += ClientOnIdleError;
                     }
-                    _clients.Add(client, acc);
+                    _clients.Add(new ClientWithAccount(client, acc));
                 }
                 catch (InvalidCredentialsException)
                 {
@@ -64,38 +81,50 @@ namespace ImapTray
                 }
             });
 
-            bool once = true;
+            Stopwatch stopwatch = new Stopwatch(); // FIXME: remove
             while (true)
             {
-                long unread = 0;
-                foreach (var client in _clients.Keys)
+                if (stopwatch.IsRunning)
                 {
-                    var info = client.GetMailboxInfo();
-                    unread += info.Unread;
+                    stopwatch.Stop();
+                    Debug.WriteLine("Stopwatch: " + stopwatch.Elapsed.Seconds);
+                    stopwatch.Reset();
                 }
 
-                if (once || _unread != unread)
+                if (!stopwatch.IsRunning)
                 {
-                    onUnreadChanged(unread);
-                    _unread = unread;
-                    if (once)
+                    stopwatch.Start();
+                }
+
+                foreach (var el in _clients)
+                {
+                    var info = el.Client.GetMailboxInfo();
+                    int unread = el.Unread;
+                    el.Unread = info.Unread;
+                    if (unread != el.Unread)
                     {
-                        once = false;
+                        onUnreadChanged(el.Account, unread);
                     }
                 }
 
-                if (_stopEvent.WaitOne(TimeSpan.FromMilliseconds(60 * 1000)))
+                if (CheckNowEvent.WaitOne(TimeSpan.FromMilliseconds(60 * 1000)))
+                {
+                    CheckNowEvent.Reset();
+                    continue;
+                }
+
+                if (_stopEvent.WaitOne(0))
                 {
                     break;
                 }
             }
 
-            foreach (var client in _clients.Keys)
+            foreach (var el in _clients)
             {
-                client.NewMessage -= ClientOnNewMessage;
-                client.IdleError -= ClientOnIdleError;
-                client.Logout();
-                client.Dispose();
+                el.Client.NewMessage -= ClientOnNewMessage;
+                el.Client.IdleError -= ClientOnIdleError;
+                el.Client.Logout();
+                el.Client.Dispose();
             }
         }
 
@@ -105,25 +134,31 @@ namespace ImapTray
             string subject;
 
             var client = (ImapClient) sender;
-            var account = _clients[client];
-            using (var message = e.Client.GetMessage(e.MessageUID, FetchOptions.HeadersOnly))
+            var el = _clients.Find(x => x.Client == client);
+            if (el != null)
             {
-                from = message.From.Address;
-                subject = message.Subject;
-                // keep email unread:
-                client.RemoveMessageFlags(e.MessageUID, null, MessageFlag.Seen);
-            }
-            onNewMessage(account.username, subject, from);
+                using (var message = e.Client.GetMessage(e.MessageUID, FetchOptions.HeadersOnly))
+                {
+                    from = message.From.Address;
+                    subject = message.Subject;
+                    // keep email unread:
+                    client.RemoveMessageFlags(e.MessageUID, null, MessageFlag.Seen);
+                }
+                onNewMessage(el.Account.username, subject, from);
 
-            _unread += 1;
-            onUnreadChanged(_unread);
+                el.Unread += 1;
+                onUnreadChanged(el.Account, el.Unread);
+            }
         }
 
         private void ClientOnIdleError(object sender, IdleErrorEventArgs e)
         {
             var client = (ImapClient) sender;
-            var account = _clients[client];
-            Log.Error("Account `{0}`: IDLE error - {1}", account.username, e.Exception.Message);
+            var el = _clients.Find(x => x.Client == client);
+            if (el != null)
+            {
+                Log.Error("Account `{0}`: IDLE error - {1}", el.Account.username, e.Exception.Message);
+            }
         }
 
         public void Dispose()
