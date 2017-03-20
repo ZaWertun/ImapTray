@@ -130,6 +130,7 @@ namespace ImapTray
             if (_configWindow == null)
             {
                 _configWindow = new ConfigurationForm();
+                _configWindow.Closed += ConfigWindowOnClosed;
             }
 
             if (_configWindow.Visible)
@@ -142,11 +143,18 @@ namespace ImapTray
             }
         }
 
+        private void ConfigWindowOnClosed(object sender, EventArgs eventArgs)
+        {
+            _configWindow.Dispose();
+            _configWindow = null;
+        }
+
         private void ShowLog(object sender, EventArgs e)
         {
             if (_logWindow == null)
             {
                 _logWindow = new LogForm();
+                _logWindow.Closed += LogWindowOnClosed;
             }
 
             if (_logWindow.Visible)
@@ -157,6 +165,12 @@ namespace ImapTray
             {
                 _logWindow.ShowDialog();
             }
+        }
+
+        private void LogWindowOnClosed(object sender, EventArgs eventArgs)
+        {
+            _logWindow.Dispose();
+            _logWindow = null;
         }
 
         private void Exit(object sender, EventArgs e)

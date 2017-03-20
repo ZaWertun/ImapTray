@@ -1,16 +1,17 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text;
-using System.IO.IsolatedStorage;
 using System.Runtime.Serialization.Json;
 using System.Security.Cryptography;
+using System;
 
 namespace ImapTray
 {
     static class ConfigurationManager
     {
+        private const string DirName = "ImapTray";
         private const string FileName = "Credentials.dat";
-        private const IsolatedStorageScope Scope = IsolatedStorageScope.User | IsolatedStorageScope.Assembly;
 
         public static event OnConfigurationChanged onConfigurationChanged;
 
@@ -23,6 +24,13 @@ namespace ImapTray
 
         private static Configuration _cache = null;
 
+        private static string GetDirPath()
+        {
+            var path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), DirName);
+            Debug.WriteLine("Application configuration dir: " + path);
+            return path;
+        }
+
         public static Configuration Load()
         {
             if (_cache != null)
@@ -30,29 +38,27 @@ namespace ImapTray
                 return _cache;
             }
 
-            using (var storage = IsolatedStorageFile.GetStore(Scope, null, null))
+            var filePath = Path.Combine(GetDirPath(), FileName);
+            if (!File.Exists(filePath))
             {
-                if (!storage.FileExists(FileName))
-                {
-                    return new Configuration(new Account[] {});
-                }
+                return new Configuration(new Account[] { });
+            }
 
-                byte[] encryptedData;
-                using (var stream = new IsolatedStorageFileStream(FileName, FileMode.Open, FileAccess.Read, storage))
-                using (var memoryStream = new MemoryStream())
-                {
-                    stream.CopyTo(memoryStream);
-                    encryptedData = memoryStream.ToArray();                   
-                }
+            byte[] encryptedData;
+            using (var stream = File.Open(filePath, FileMode.Open, FileAccess.Read))
+            using (var memoryStream = new MemoryStream())
+            {
+                stream.CopyTo(memoryStream);
+                encryptedData = memoryStream.ToArray();
+            }
 
-                byte[] data = Decrypt(encryptedData);
-                using (var memoryStream = new MemoryStream(data))
-                {
-                    var serializer = new DataContractJsonSerializer(typeof(Configuration));
-                    var result = (Configuration) serializer.ReadObject(memoryStream);
-                    _cache = result;
-                    return result;
-                }
+            byte[] data = Decrypt(encryptedData);
+            using (var memoryStream = new MemoryStream(data))
+            {
+                var serializer = new DataContractJsonSerializer(typeof(Configuration));
+                var result = (Configuration)serializer.ReadObject(memoryStream);
+                _cache = result;
+                return result;
             }
         }
 
@@ -66,6 +72,13 @@ namespace ImapTray
         {
             var serializer = new DataContractJsonSerializer(typeof(Configuration));
 
+            var dirPath = GetDirPath();
+            if (!Directory.Exists(dirPath))
+            {
+                Directory.CreateDirectory(dirPath);
+            }
+
+            var filePath = Path.Combine(dirPath, FileName);
             using (var memoryStream = new MemoryStream())
             {
                 serializer.WriteObject(memoryStream, configuration);
@@ -76,8 +89,7 @@ namespace ImapTray
                     string json = reader.ReadToEnd();
                     byte[] data = Encrypt(json);
 
-                    using (var storage = IsolatedStorageFile.GetStore(Scope, null, null))
-                    using (var stream = new IsolatedStorageFileStream(FileName, FileMode.OpenOrCreate, FileAccess.Write, storage))
+                    using (var stream = File.Open(filePath, FileMode.OpenOrCreate, FileAccess.Write))
                     {
                         stream.Write(data, 0, data.Length);
                         stream.Flush(true);
