@@ -45,6 +45,7 @@ namespace ImapTray
 
         public void Stop()
         {
+            CheckNowEvent.Set();
             _stopEvent.Set();
             _workerThread.Join();
             _workerThread = null;
@@ -107,15 +108,15 @@ namespace ImapTray
                     }
                 }
 
+                if (_stopEvent.WaitOne(0))
+                {
+                    break;
+                }
+
                 if (CheckNowEvent.WaitOne(TimeSpan.FromMilliseconds(60 * 1000)))
                 {
                     CheckNowEvent.Reset();
                     continue;
-                }
-
-                if (_stopEvent.WaitOne(0))
-                {
-                    break;
                 }
             }
 
