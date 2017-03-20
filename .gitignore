@@ -1,4 +1,5 @@
 *.suo
+ImapTray.*
 bin/
 obj/
 packages/
