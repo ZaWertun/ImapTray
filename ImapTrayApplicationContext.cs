@@ -9,10 +9,12 @@ namespace ImapTray
 {
     class ImapTrayApplicationContext : ApplicationContext
     {
-        private readonly Dictionary<string, int> _unread = new Dictionary<string, int>();
+        private readonly Timer _clickTimer = new Timer();
         private readonly NotifyIcon _notifyIcon = new NotifyIcon();
         private readonly AccountChecker _checker = new AccountChecker();
+        private readonly Dictionary<string, int> _unread = new Dictionary<string, int>();
 
+        private bool _singleClick;
         private LogForm _logWindow = null;
         private ConfigurationForm _configWindow = null;
 
@@ -25,9 +27,11 @@ namespace ImapTray
             };
             MainForm.Shown += (sender, args) => ((Form) sender).Hide();
 
+            _clickTimer.Tick += ClickTimerOnTick;
+            _clickTimer.Interval = SystemInformation.DoubleClickTime;
+
             _notifyIcon.Icon = Properties.Resources.AppIcon;
-            _notifyIcon.Click += ShowUnreadCount;
-            _notifyIcon.DoubleClick += OpenEmailClient;
+            _notifyIcon.MouseDown += NotifyIconOnMouseUp;
             _notifyIcon.ContextMenu = new ContextMenu(new[]
             {
                 new MenuItem("Check now", CheckNow),
@@ -71,14 +75,40 @@ namespace ImapTray
             };
         }
 
-        private void ShowUnreadCount(object sender, EventArgs e)
+        private void ClickTimerOnTick(object sender, EventArgs eventArgs)
         {
-            MouseEventArgs mouseArgs = e as MouseEventArgs;
-            if (mouseArgs == null || mouseArgs.Button != MouseButtons.Left)
+            if (_singleClick)
+            {
+                _clickTimer.Stop();
+                _singleClick = false;
+                
+                ShowUnreadCount();
+            }
+        }
+
+        private void NotifyIconOnMouseUp(object sender, MouseEventArgs e)
+        {
+            if (e.Button != MouseButtons.Left)
             {
                 return;
             }
 
+            if (e.Clicks < 2)
+            {
+                _singleClick = true;
+                _clickTimer.Start();
+            }
+            else
+            {
+                _singleClick = false;
+                _clickTimer.Stop();
+
+                OpenEmailClient();
+            }
+        }
+
+        private void ShowUnreadCount()
+        {
             int total = _unread.Values.Sum();
             var title = (total == 0) ? "Unread emails not found" : "Some accounts have unread emails";
             var text = "";
@@ -102,7 +132,7 @@ namespace ImapTray
             NotificationManager.Add(notify);
         }
 
-        private void OpenEmailClient(object sender, EventArgs e)
+        private void OpenEmailClient()
         {
             var clientPath = ConfigurationManager.Load().EmailClientPath;
             if (String.IsNullOrEmpty(clientPath))
