@@ -87,12 +87,8 @@ namespace ImapTray
                 foreach (var el in _clients)
                 {
                     var info = el.Client.GetMailboxInfo();
-                    int unread = el.Unread;
                     el.Unread = info.Unread;
-                    if (unread != el.Unread)
-                    {
-                        onUnreadChanged(el.Account, unread);
-                    }
+                    onUnreadChanged(el.Account, el.Unread);
                 }
 
                 if (_stopEvent.WaitOne(0))
