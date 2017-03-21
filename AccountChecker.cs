@@ -82,21 +82,8 @@ namespace ImapTray
                 }
             });
 
-            Stopwatch stopwatch = new Stopwatch(); // FIXME: remove
             while (true)
             {
-                if (stopwatch.IsRunning)
-                {
-                    stopwatch.Stop();
-                    Debug.WriteLine("Stopwatch: " + stopwatch.Elapsed.Seconds);
-                    stopwatch.Reset();
-                }
-
-                if (!stopwatch.IsRunning)
-                {
-                    stopwatch.Start();
-                }
-
                 foreach (var el in _clients)
                 {
                     var info = el.Client.GetMailboxInfo();
@@ -116,7 +103,6 @@ namespace ImapTray
                 if (CheckNowEvent.WaitOne(TimeSpan.FromMilliseconds(60 * 1000)))
                 {
                     CheckNowEvent.Reset();
-                    continue;
                 }
             }
 
