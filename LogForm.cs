@@ -57,5 +57,10 @@ namespace ImapTray
 
             listView1.EndUpdate();
         }
+
+        private void LogForm_Load(object sender, EventArgs e)
+        {
+            Icon = Properties.Resources.AppIcon;
+        }
     }
 }

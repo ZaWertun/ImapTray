@@ -39,6 +39,11 @@ namespace ImapTray
             bool ssl = chbSsl.Checked;
             OnAction(this, new Account(username, password, server, port, ssl));
         }
+
+        private void AccountForm_Load(object sender, System.EventArgs e)
+        {
+            Icon = Properties.Resources.AppIcon;
+        }
     }
 
     public delegate void OnActionHandler(AccountForm form, Account account);

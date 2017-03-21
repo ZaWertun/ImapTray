@@ -111,5 +111,10 @@ namespace ImapTray
             dialog.CheckFileExists = true;
             dialog.ShowDialog(this);
         }
+
+        private void ConfigurationForm_Load(object sender, EventArgs e)
+        {
+            Icon = Properties.Resources.AppIcon;
+        }
     }
 }

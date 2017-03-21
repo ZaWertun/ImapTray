@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LogForm));
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.btnClose = new System.Windows.Forms.Button();
             this.listView1 = new System.Windows.Forms.ListView();
@@ -105,11 +104,11 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(492, 323);
             this.Controls.Add(this.tableLayoutPanel1);
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "LogForm";
             this.Text = "Log";
+            this.Load += new System.EventHandler(this.LogForm_Load);
             this.Shown += new System.EventHandler(this.LogForm_Shown);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.ResumeLayout(false);
