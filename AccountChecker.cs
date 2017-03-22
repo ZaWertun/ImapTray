@@ -78,7 +78,7 @@ namespace ImapTray
                 }
                 catch (Exception ex)
                 {
-                    Log.Error("Account `{0}`: {1}", acc.username, ex.Message);
+                    Log.Error("Error when connecting to account `{0}`: {1}", acc.username, ex.Message);
                 }
             });
 
@@ -86,9 +86,16 @@ namespace ImapTray
             {
                 foreach (var el in _clients)
                 {
-                    var info = el.Client.GetMailboxInfo();
-                    el.Unread = info.Unread;
-                    onUnreadChanged(el.Account, el.Unread);
+                    try
+                    {
+                        var info = el.Client.GetMailboxInfo();
+                        el.Unread = info.Unread;
+                        onUnreadChanged(el.Account, el.Unread);
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Error("Error when checking unread emails for account `{0}`: {1}", el.Account.username, ex.Message);
+                    }
                 }
 
                 if (_stopEvent.WaitOne(0))
