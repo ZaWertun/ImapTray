@@ -109,22 +109,16 @@ namespace ImapTray
 
         private void ShowUnreadCount()
         {
-            int total = _unread.Values.Sum();
-            var title = (total == 0) ? "Unread emails not found" : "Some accounts have unread emails";
             var text = "";
-
-            if (total > 0)
+            foreach (var keyValue in _unread)
             {
-                foreach (var keyValue in _unread)
-                {
-                    text += keyValue.Key + ": " + keyValue.Value + '\n';
-                }
+                text += keyValue.Key + ": " + keyValue.Value + '\n';
             }
 
             var notify = new Notification
             {
                 Icon = Properties.Resources.AppIconImage,
-                Title = title,
+                Title = "Unread emails",
                 TitleBackgroundColor = Color.Gray,
                 Text = text,
                 Timeout = 5 * 1000
