@@ -111,10 +111,20 @@ namespace ImapTray
 
             foreach (var el in _clients)
             {
-                el.Client.NewMessage -= ClientOnNewMessage;
-                el.Client.IdleError -= ClientOnIdleError;
-                el.Client.Logout();
-                el.Client.Dispose();
+                try
+                {
+                    el.Client.NewMessage -= ClientOnNewMessage;
+                    el.Client.IdleError -= ClientOnIdleError;
+                    el.Client.Logout();
+                }
+                catch (Exception)
+                {
+                    // ignore
+                }
+                finally
+                {
+                    el.Client.Dispose();
+                }
             }
         }
 
